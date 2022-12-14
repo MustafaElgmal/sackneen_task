@@ -1,11 +1,13 @@
 import { User } from "../entities/user";
-import {  movieType, userCreateType } from "./../types";
+import { movieType, userCreateType } from "./../types";
 import validator from "validator";
 import { comparePassword } from "./functions";
-import {Movie} from '../entities/movie'
+import { Movie } from "../entities/movie";
 
 export const userValidation = async (user: userCreateType) => {
   const { firstName, lastName, email, password } = user;
+  console.log(email);
+
   const errors: { message: string }[] = [];
   if (!firstName) {
     errors.push({ message: "firstName is required!" });
@@ -17,7 +19,8 @@ export const userValidation = async (user: userCreateType) => {
     errors.push({ message: "email is required!" });
   } else {
     try {
-      const userFind = await User.findOne({ where: { email } });
+      const userFind = await User.findOne({ email });
+      console.log(userFind);
       if (userFind) {
         errors.push({ message: "User is elready exsiting!" });
       }
@@ -50,7 +53,7 @@ export const loginValidation = async (user: {
     errors.push({ message: "email is required!" });
   } else {
     try {
-      const userFind = await User.findOne({ where: { email } });
+      const userFind = await User.findOne({ email });
       if (!userFind) {
         errors.push({ message: "email is not vaild!" });
       } else {
@@ -70,13 +73,19 @@ export const loginValidation = async (user: {
   return errors;
 };
 
-export const AddFavoriteMovieValidation=async(movie:movieType)=>{
-    const errors: { message: string }[] = [];
-  const { name, description,profilePath,coverPath } =movie;
-  if (!name) {
-    errors.push({ message: "name is required!" });
-  }else{
-    const movie=await Movie.findOne({})
+export const addMyFavoriteMovie = async (movieId: number, email: string) => {
+  const errors: { message: string }[] = [];
+  try {
+    const user = await User.findOne({ email });
+    console.log(user?.favoriteMovies)
+    const favoriteMovie = user?.favoriteMovies.find(
+      (movie) => movie?.id === movieId
+    );
+    if (favoriteMovie) {
+      errors.push({ message: "Movie is already exixting!" });
+    }
+  } catch (e) {
+    throw e;
   }
-
-}
+  return errors;
+};

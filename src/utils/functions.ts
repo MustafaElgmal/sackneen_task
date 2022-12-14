@@ -1,3 +1,4 @@
+import { userType } from './../types';
 import bcrypt from 'bcryptjs'
 import  jwt from 'jsonwebtoken';
 export const hashPassword = async (password: string) => {
@@ -20,11 +21,9 @@ export const hashPassword = async (password: string) => {
     }
   };
 
-  export const generateAuth = async (userName: string) => {
+  export const generateAuth = async (email: string) => {
     try {
-      const token = jwt.sign({ userName }, process.env.SECRETKEY!, {
-        expiresIn: "24h",
-      });
+      const token = jwt.sign({ email }, process.env.SECRETKEY!);
       return token;
     } catch (e) {
       throw e;
@@ -33,10 +32,10 @@ export const hashPassword = async (password: string) => {
   
   export const verifyToken = async (authorization: string) => {
     try {
-      const { userName } = jwt.verify(authorization, process.env.SECRETKEY!) as {
-        userName: string;
+      const { email} = jwt.verify(authorization, process.env.SECRETKEY!) as {
+        email: string;
       };
-      return userName;
+      return email;
     } catch (e) {
       throw e;
     }

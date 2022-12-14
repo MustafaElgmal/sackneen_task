@@ -13,7 +13,7 @@ export const userAuth = async (
   }
   try {
     const email = await verifyToken(authorization);
-    const user = await User.findOne({ where: { email } });
+    const user = await User.findOne({ email});
     if (!user) {
       return res.status(401).json({ error: "User is not exites!" });
     }

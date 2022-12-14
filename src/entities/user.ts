@@ -1,3 +1,4 @@
+import { movieType } from "./../types";
 import mongoose from "mongoose";
 const Schema = mongoose.Schema;
 
@@ -25,10 +26,26 @@ const userSchema = new Schema({
   },
   favoriteMovies: [
     {
-      name: String,
-      description: String,
-      profilePath: String,
-      coverPath: String,
+      adult: Boolean,
+      backdrop_path: String,
+      budget: Number,
+      homepage: String,
+      id: Number,
+      imdb_id: String,
+      original_language: String,
+      original_title: String,
+      overview: String,
+      popularity: Number,
+      poster_path: String,
+      release_date: String,
+      revenue: Number,
+
+      status: String,
+      tagline: String,
+      title: String,
+      video: Boolean,
+      vote_average: Number,
+      vote_count: Number,
     },
   ],
 });
