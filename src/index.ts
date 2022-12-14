@@ -16,14 +16,11 @@ app.use(morgan("dev"));
 app.use(helmet());
 app.use(json());
 app.use(urlencoded({ extended: false }));
-app.use('/users',userRouter)
-app.use('/movies',movieRouter)
+app.use('/api/users',userRouter)
+app.use('/api/movies',movieRouter)
 app.get("*", (req, res) => {
   res.status(401).send({ error: "Api not found!" });
 });
-
-
-
 app.listen(port,() => {
    connection(port);
 });

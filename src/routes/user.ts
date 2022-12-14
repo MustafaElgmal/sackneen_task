@@ -13,7 +13,7 @@ import { userAuth } from "../middleware/userAuth";
 
 const router = Router();
 
-router.post("/", async (req, res) => {
+router.post("/register", async (req, res) => {
   try {
     const errors = await userValidation(req.body);
 
