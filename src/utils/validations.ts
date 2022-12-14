@@ -6,7 +6,6 @@ import { Movie } from "../entities/movie";
 
 export const userValidation = async (user: userCreateType) => {
   const { firstName, lastName, email, password } = user;
-  console.log(email);
 
   const errors: { message: string }[] = [];
   if (!firstName) {
@@ -77,12 +76,17 @@ export const addMyFavoriteMovie = async (movieId: number, email: string) => {
   const errors: { message: string }[] = [];
   try {
     const user = await User.findOne({ email });
-    console.log(user?.favoriteMovies)
-    const favoriteMovie = user?.favoriteMovies.find(
-      (movie) => movie?.id === movieId
-    );
-    if (favoriteMovie) {
-      errors.push({ message: "Movie is already exixting!" });
+    if (user?.favoriteMovies.length === 100) {
+      errors.push({
+        message: "favoriteMovies become 100 movies please delete one !",
+      });
+    } else {
+      const favoriteMovie = user?.favoriteMovies.find(
+        (movie) => movie?.id === movieId
+      );
+      if (favoriteMovie) {
+        errors.push({ message: "Movie is already exixting!" });
+      }
     }
   } catch (e) {
     throw e;

@@ -1,7 +1,11 @@
 import { addMyFavoriteMovie } from "./../utils/validations";
 import { getMovieById } from "./../utils/apis";
 import { RequestAuthType, userCreateType } from "./../types";
-import { generateAuth, hashPassword } from "./../utils/functions";
+import {
+  generateAuth,
+  getFavoriteMovieById,
+  hashPassword,
+} from "./../utils/functions";
 import { Router } from "express";
 import { loginValidation, userValidation } from "../utils/validations";
 import { User } from "../entities/user";
@@ -29,7 +33,6 @@ router.post("/", async (req, res) => {
     const token = await generateAuth(email);
     res.status(201).json({ token });
   } catch (e) {
-    console.log(e);
     res.status(500).json({ error: "Server is down!" });
   }
 });
@@ -76,6 +79,37 @@ router.get("/favoritemovies", userAuth, async (req: RequestAuthType, res) => {
   const user = req.user!;
   res.status(200).json({ favoriteMovies: user.favoriteMovies });
 });
+router.patch(
+  "/arrangmovie/:movieId",
+  userAuth,
+  async (req: RequestAuthType, res) => {
+    const { movieId } = req.params;
+    const { moveto } = req.query;
+    if (!moveto) {
+      return res
+        .status(400)
+        .json({ message: "Please enter your moveto number that movie move to" });
+    }
+    try {
+      const user = req.user!;
+      const userFind = await User.findOne({ email: user.email });
+      const errors = getFavoriteMovieById(+movieId!, user);
+      if (errors.length > 0) {
+        return res.status(400).json(errors);
+      }
+      userFind?.favoriteMovies.forEach((movie, index, arr) => {
+        if (movie.id === +movieId!) {
+          arr.splice(index, 1);
+          arr.splice(+moveto - 1, 0, movie);
+        }
+      });
+      userFind?.save();
+      res.status(200).json({ data: user.favoriteMovies });
+    } catch (e) {
+      res.status(500).json({ error: "Server is down!" });
+    }
+  }
+);
 
 router.delete(
   "/deletemovietolist/:movieId",
@@ -83,21 +117,20 @@ router.delete(
   async (req: RequestAuthType, res) => {
     const { movieId } = req.params;
     try {
-      const data = await getMovieById(+movieId!);
       const user = req.user!;
       const userFind = await User.findOne({ email: user.email });
-      userFind?.favoriteMovies.splice(0, 2);
+      const errors = getFavoriteMovieById(+movieId!, user);
+      if (errors.length > 0) {
+        return res.status(400).json(errors);
+      }
       userFind?.favoriteMovies.forEach((movie, index, arr) => {
         if (movie.id === +movieId!) {
-          return arr.splice(0, index);
+          return arr.splice(index, 1);
         }
       });
       userFind?.save();
-      res.status(200).json({ data });
-    } catch (e: any) {
-      if (e.response.status === 404) {
-        return res.status(404).json({ message: "Movie is not found!" });
-      }
+      res.status(200).json({ data: user.favoriteMovies });
+    } catch (e) {
       res.status(500).json({ error: "Server is down!" });
     }
   }
