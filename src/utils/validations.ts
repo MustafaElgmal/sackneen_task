@@ -1,8 +1,7 @@
 import { User } from "../entities/user";
-import { movieType, userCreateType } from "./../types";
+import { userCreateType } from "./../types";
 import validator from "validator";
 import { comparePassword } from "./functions";
-import { Movie } from "../entities/movie";
 
 export const userValidation = async (user: userCreateType) => {
   const { firstName, lastName, email, password } = user;
@@ -17,14 +16,18 @@ export const userValidation = async (user: userCreateType) => {
   if (!email) {
     errors.push({ message: "email is required!" });
   } else {
-    try {
-      const userFind = await User.findOne({ email });
-      console.log(userFind);
-      if (userFind) {
-        errors.push({ message: "User is elready exsiting!" });
+    const vaild = validator.isEmail(email);
+    if (!vaild) {
+      errors.push({ message: "Email is not vaild!" });
+    } else {
+      try {
+        const userFind = await User.findOne({ email });
+        if (userFind) {
+          errors.push({ message: "User is elready exsiting!" });
+        }
+      } catch (e) {
+        throw e;
       }
-    } catch (e) {
-      throw e;
     }
   }
   if (!password) {
