@@ -104,7 +104,7 @@ router.patch(
         }
       });
       userFind?.save();
-      res.status(200).json({ data: user.favoriteMovies });
+      res.status(200).json({data:userFind?.favoriteMovies});
     } catch (e) {
       res.status(500).json({ error: "Server is down!" });
     }
@@ -129,7 +129,7 @@ router.delete(
         }
       });
       userFind?.save();
-      res.status(200).json({ data: user.favoriteMovies });
+      res.status(200).json({ message:'Movie deleted from favorit list!' });
     } catch (e) {
       res.status(500).json({ error: "Server is down!" });
     }
