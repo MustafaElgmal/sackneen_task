@@ -65,7 +65,7 @@ router.post(
       }
       userFind?.favoriteMovies.push(data);
       userFind?.save();
-      res.status(200).json({ data });
+      res.status(201).json({ data });
     } catch (e: any) {
       if (e.response.status === 404) {
         return res.status(404).json({ message: "Movie is not found!" });
